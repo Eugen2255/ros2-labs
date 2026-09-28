@@ -1,0 +1,1 @@
+Setting parameter failed: publish_hz=nan: нужно конечное число

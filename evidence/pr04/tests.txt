@@ -1,0 +1,51 @@
+============================= test session starts ==============================
+platform linux -- Python 3.14.4, pytest-9.0.2, pluggy-1.6.0 -- /usr/bin/python3
+cachedir: .pytest_cache
+rootdir: /work/src/patrol
+plugins: ament_flake8-0.20.6, ament_copyright-0.20.6, launch_testing_ros-0.29.8, launch_testing-3.9.7, ament_pep257-0.20.6, ament_xmllint-0.20.6, ament_mypy-0.20.6, ament_lint-0.20.6, typeguard-4.4.4, colcon-core-0.21.0
+collecting ... collected 42 items
+
+test/test_control.py::test_no_pose_gives_stop PASSED                     [  2%]
+test/test_control.py::test_pose_gives_patrol_command PASSED              [  4%]
+test/test_control.py::test_command_does_not_depend_on_pose_values PASSED [  7%]
+test/test_control.py::test_command_uses_parameters PASSED                [  9%]
+test/test_control.py::test_defaults_are_valid PASSED                     [ 11%]
+test/test_control.py::test_publish_hz_change_10_to_5 PASSED              [ 14%]
+test/test_control.py::test_publish_hz_invalid_rejected[0.0] PASSED       [ 16%]
+test/test_control.py::test_publish_hz_invalid_rejected[0] PASSED         [ 19%]
+test/test_control.py::test_publish_hz_invalid_rejected[-5.0] PASSED      [ 21%]
+test/test_control.py::test_publish_hz_invalid_rejected[nan] PASSED       [ 23%]
+test/test_control.py::test_publish_hz_invalid_rejected[inf] PASSED       [ 26%]
+test/test_control.py::test_publish_hz_invalid_rejected[0.5] PASSED       [ 28%]
+test/test_control.py::test_publish_hz_invalid_rejected[30.5] PASSED      [ 30%]
+test/test_control.py::test_publish_hz_zero_reason PASSED                 [ 33%]
+test/test_control.py::test_publish_hz_nan_reason PASSED                  [ 35%]
+test/test_control.py::test_boundaries_accepted[publish_hz-1.0] PASSED    [ 38%]
+test/test_control.py::test_boundaries_accepted[publish_hz-30.0] PASSED   [ 40%]
+test/test_control.py::test_boundaries_accepted[publish_hz-7] PASSED      [ 42%]
+test/test_control.py::test_boundaries_accepted[linear_speed-0.0] PASSED  [ 45%]
+test/test_control.py::test_boundaries_accepted[linear_speed-1.0] PASSED  [ 47%]
+test/test_control.py::test_boundaries_accepted[turn_rate--1.0] PASSED    [ 50%]
+test/test_control.py::test_boundaries_accepted[turn_rate-1.0] PASSED     [ 52%]
+test/test_control.py::test_other_invalid_rejected[linear_speed--0.1] PASSED [ 54%]
+test/test_control.py::test_other_invalid_rejected[linear_speed-1.1] PASSED [ 57%]
+test/test_control.py::test_other_invalid_rejected[linear_speed-nan] PASSED [ 59%]
+test/test_control.py::test_other_invalid_rejected[turn_rate--1.5] PASSED [ 61%]
+test/test_control.py::test_other_invalid_rejected[turn_rate-2.0] PASSED  [ 64%]
+test/test_control.py::test_other_invalid_rejected[turn_rate--inf] PASSED [ 66%]
+test/test_control.py::test_other_invalid_rejected[publish_hz-fast] PASSED [ 69%]
+test/test_control.py::test_other_invalid_rejected[publish_hz-True] PASSED [ 71%]
+test/test_control.py::test_other_invalid_rejected[unknown-1.0] PASSED    [ 73%]
+test/test_copyright.py::test_copyright SKIPPED (No copyright header ...) [ 76%]
+test/test_flake8.py::test_flake8 PASSED                                  [ 78%]
+test/test_mypy.py::test_mypy PASSED                                      [ 80%]
+test/test_parameters_node.py::test_defaults PASSED                       [ 83%]
+test/test_parameters_node.py::test_publish_hz_10_to_5_recreates_single_timer PASSED [ 85%]
+test/test_parameters_node.py::test_invalid_publish_hz_rejected_state_kept[0.0] PASSED [ 88%]
+test/test_parameters_node.py::test_invalid_publish_hz_rejected_state_kept[-5.0] PASSED [ 90%]
+test/test_parameters_node.py::test_invalid_publish_hz_rejected_state_kept[nan] PASSED [ 92%]
+test/test_parameters_node.py::test_speed_parameters_change_command PASSED [ 95%]
+test/test_pep257.py::test_pep257 PASSED                                  [ 97%]
+test/test_xmllint.py::test_xmllint PASSED                                [100%]
+
+======================== 41 passed, 1 skipped in 10.80s ========================

@@ -1,0 +1,13 @@
+diff --git a/src/patrol/patrol/control.py b/src/patrol/patrol/control.py
+index 97c9715..11ad589 100644
+--- a/src/patrol/patrol/control.py
++++ b/src/patrol/patrol/control.py
+@@ -49,6 +49,8 @@ def compute_command(
+ 
+ def check_parameter(name: str, value: object) -> Optional[str]:
+     """Вернуть причину отказа для значения параметра или None, если оно допустимо."""
++    if name == 'publish_hz':
++        return None  # ДЕФЕКТ ПР04: проверка частоты временно отключена
+     if name not in LIMITS:
+         return f'{name}: неизвестный параметр'
+     if isinstance(value, bool) or not isinstance(value, (int, float)):

@@ -1,0 +1,51 @@
+[INFO] [1790602222.906195882] [patrol]: publishing to /turtle1/cmd_vel at 10.0 Hz, waiting for /turtle1/pose
+[INFO] [1790602223.002510332] [patrol]: first pose: x=8.586 y=5.670 theta=1.599
+Traceback (most recent call last):
+  File "/work/install/patrol/lib/patrol/patrol", line 33, in <module>
+    sys.exit(load_entry_point('patrol', 'console_scripts', 'patrol')())
+             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/work/build/patrol/patrol/patrol.py", line 121, in main
+    rclpy.spin(node)
+    ~~~~~~~~~~^^^^^^
+  File "/opt/ros/lyrical/lib/python3.14/site-packages/rclpy/__init__.py", line 324, in spin
+    executor.spin_once()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "/opt/ros/lyrical/lib/python3.14/site-packages/rclpy/executors.py", line 1020, in spin_once
+    self._spin_once_impl(timeout_sec)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/opt/ros/lyrical/lib/python3.14/site-packages/rclpy/executors.py", line 1012, in _spin_once_impl
+    raise exception
+  File "/opt/ros/lyrical/lib/python3.14/site-packages/rclpy/task.py", line 343, in _execute_coroutine_step
+    result = coro.send(None)
+  File "/opt/ros/lyrical/lib/python3.14/site-packages/rclpy/executors.py", line 670, in handler
+    await call_coroutine()
+  File "/opt/ros/lyrical/lib/python3.14/site-packages/rclpy/executors.py", line 604, in _execute
+    response = await await_or_execute(srv.callback, request, srv.srv_type.Response())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/ros/lyrical/lib/python3.14/site-packages/rclpy/executors.py", line 139, in await_or_execute
+    return callback(*args)
+  File "/opt/ros/lyrical/lib/python3.14/site-packages/rclpy/parameter_service.py", line 142, in _set_parameters_callback
+    result = node.set_parameters_atomically([param])
+  File "/opt/ros/lyrical/lib/python3.14/site-packages/rclpy/node.py", line 820, in set_parameters_atomically
+    return self._set_parameters_atomically(parameter_list)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/ros/lyrical/lib/python3.14/site-packages/rclpy/node.py", line 840, in _set_parameters_atomically
+    return self._set_parameters_atomically_common(parameter_list)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/ros/lyrical/lib/python3.14/site-packages/rclpy/node.py", line 944, in _set_parameters_atomically_common
+    self._call_post_set_parameters_callback(parameter_list)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/opt/ros/lyrical/lib/python3.14/site-packages/rclpy/node.py", line 1038, in _call_post_set_parameters_callback
+    callback(parameter_list)
+    ~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/work/build/patrol/patrol/patrol.py", line 87, in _apply_parameters
+    self._restart_timer(param.value)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/work/build/patrol/patrol/patrol.py", line 95, in _restart_timer
+    self._timer = self.create_timer(timer_period(publish_hz), self._on_timer)
+                                    ~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/work/build/patrol/patrol/control.py", line 68, in timer_period
+    return 1.0 / publish_hz
+           ~~~~^~~~~~~~~~~~
+ZeroDivisionError: division by zero
+[ros2run]: Process exited with failure 1

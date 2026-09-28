@@ -1,0 +1,12 @@
+Parameter name: publish_hz
+  Type: double
+  Description: Частота публикации команды (период таймера 1/publish_hz), Гц; допустимо [1.0, 30.0], конечное число
+  Constraints:
+Parameter name: linear_speed
+  Type: double
+  Description: Линейная скорость после получения позы, м/с; допустимо [0.0, 1.0], конечное число
+  Constraints:
+Parameter name: turn_rate
+  Type: double
+  Description: Угловая скорость после получения позы, рад/с; допустимо [-1.0, 1.0], конечное число
+  Constraints:

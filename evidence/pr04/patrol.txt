@@ -1,0 +1,8 @@
+[INFO] [1790601957.695258845] [patrol]: publishing to /turtle1/cmd_vel at 10.0 Hz, waiting for /turtle1/pose
+[INFO] [1790601957.786235470] [patrol]: first pose: x=5.544 y=5.544 theta=0.000
+[INFO] [1790602054.053594026] [patrol]: publish_hz = 5.0
+[WARN] [1790602111.333723899] [patrol]: rejected publish_hz=0.0: вне диапазона [1.0, 30.0]
+[WARN] [1790602112.491871093] [patrol]: rejected publish_hz=-5.0: вне диапазона [1.0, 30.0]
+[WARN] [1790602113.633924463] [patrol]: rejected publish_hz=nan: нужно конечное число
+[INFO] [1790602158.648791538] [patrol]: linear_speed = 1.0
+[ros2run]: Received signal:  Interrupt

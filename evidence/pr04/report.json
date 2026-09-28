@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "practice_id": "PR04",
+  "commit": "dac54256bebda83724866e03db0b8e84e08a2655",
+  "course_kit": {
+    "version": "v1-w04",
+    "archive_sha256": "fec6b4e886c19146078bf69fbf90a19279a4cd33f656642395350b299efeb226"
+  },
+  "commands": [
+    "colcon build --symlink-install --packages-select turtle_bringup patrol",
+    "(cd src/patrol && python3 -m pytest test -v)",
+    "ros2 launch turtle_bringup sim.launch.py",
+    "ros2 run patrol patrol --ros-args -r cmd_vel:=/turtle1/cmd_vel",
+    "ros2 topic type /turtle1/pose",
+    "ros2 param list /patrol",
+    "ros2 param describe /patrol publish_hz linear_speed turn_rate",
+    "ros2 param get /patrol publish_hz",
+    "timeout --signal=INT 12s ros2 topic hz /turtle1/cmd_vel",
+    "ros2 param set /patrol publish_hz 5.0",
+    "ros2 param set /patrol publish_hz 0.0",
+    "ros2 param set /patrol publish_hz -5.0",
+    "ros2 param set /patrol publish_hz .nan",
+    "ros2 param set /patrol linear_speed 1.0",
+    "ros2 topic echo /turtle1/cmd_vel --once",
+    "ros2 service call /clear std_srvs/srv/Empty",
+    "ros2 action list -t",
+    "git switch pr04-defect",
+    "timeout 10s ros2 param set /patrol publish_hz 0.0",
+    "ros2 node list --no-daemon --spin-time 2",
+    "python3 .course-kit/v1/tools/check_practice.py PR04 --submission ."
+  ],
+  "tests": [
+    {
+      "name": "Тесты patrol на pr04: 41 passed, 1 skipped (чистые функции, параметры ноды, линтеры)",
+      "status": "passed",
+      "evidence": "tests.txt"
+    },
+    {
+      "name": "publish_hz 10 -> 5: Set parameter successful, поток 10.000 -> 5.000 Гц",
+      "status": "passed",
+      "evidence": "param-set-5.txt, param-get-after-5.txt, hz-10.txt, hz-5.txt"
+    },
+    {
+      "name": "publish_hz 0.0, -5.0, NaN отклонены с причиной; значение 5.0 и поток 5 Гц сохранены",
+      "status": "passed",
+      "evidence": "param-set-0.txt, param-set-neg.txt, param-set-nan.txt, param-get-after-reject.txt, hz-after-reject.txt"
+    },
+    {
+      "name": "linear_speed 1.0 принят, команда linear.x=1.0",
+      "status": "passed",
+      "evidence": "param-set-speed.txt, cmd-after-speed.txt"
+    },
+    {
+      "name": "Сервис /clear ответил Empty_Response; /turtle1/rotate_absolute найден через ros2 action list -t",
+      "status": "passed",
+      "evidence": "clear.txt, action-list.txt"
+    },
+    {
+      "name": "На pr04-defect те же тесты: 14 failed (отказ воспроизведён тестами)",
+      "status": "passed",
+      "evidence": "tests-defect.txt, defect-diff.txt"
+    }
+  ],
+  "defect": {
+    "reproducer": "Ветка pr04-defect (коммит 3f307f8): check_parameter возвращает None для publish_hz. ros2 param set /patrol publish_hz 0.0: нода падает с ZeroDivisionError в timer_period (exit 1), ros2 param set не получает ответа (timeout, exit 124), в графе остаётся только /turtlesim. Те же тесты: 14 failed, в том числе test_invalid_publish_hz_rejected_state_kept[0.0].",
+    "root_cause": "Без проверки до изменения rclpy принимает 0.0, а post-callback уничтожает старый таймер и вычисляет период 1.0 / 0.0. Исключение выходит из сервиса параметров через spin и завершает ноду: активное состояние (таймер и поток команд) разрушено.",
+    "proof_after": "На pr04 проверка в on_set-callback: ros2 param set publish_hz 0.0 -> Setting parameter failed: publish_hz=0.0: вне диапазона [1.0, 30.0]; -5.0 и NaN также отклонены; param get -> 5.0, topic hz -> 5.000 Гц. Тот же тест test_invalid_publish_hz_rejected_state_kept проходит: 41 passed, 1 skipped."
+  },
+  "claims": {
+    "public_tests_passed": true,
+    "defect_reproduced": true,
+    "defect_fixed": true
+  },
+  "time": {
+    "contact_academic_hours": 2,
+    "self_study_hours": 2
+  },
+  "ai_used": true,
+  "recorded_at_utc": "2026-09-28T13:43:39Z"
+}

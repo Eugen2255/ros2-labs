@@ -1,0 +1,1 @@
+3f307f8 PR04 defect: temporarily disable publish_hz validation

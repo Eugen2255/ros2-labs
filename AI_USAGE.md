@@ -48,3 +48,27 @@
   выполнен локально.
 
 Переписка и промпты не приложены.
+
+## PR04
+
+- Использован ИИ: да
+- Модель и версия: Claude Opus 5.5 (Anthropic)
+- Среда или интерфейс агента: Claude Code (CLI) на Windows с доступом к WSL 2
+  и Docker-контейнеру osrf/ros:lyrical-desktop-full
+- Затронутые компоненты: пакет src/patrol — параметры и их проверка
+  (patrol/control.py, patrol/patrol.py), тесты test/test_control.py
+  и test/test_parameters_node.py; ветка pr04-defect с отключённой проверкой;
+  README; workflow .github/workflows/pr04.yml; evidence/pr04 (parameters.md,
+  report.json).
+- Характер помощи: разбор задания; код параметров (проверка
+  в on_set-callback, применение и пересоздание таймера в post_set-callback),
+  чистая функция check_parameter и тесты; коммит с дефектом; CI;
+  черновик parameters.md по фактическим выводам CLI.
+- Как результат был проверен независимо: сборка, тесты на ветках pr04
+  и pr04-defect и опыт (ros2 param set 5.0 / 0.0 / -5.0 / NaN, измерение
+  частоты, изменение скорости, вызов /clear, ros2 action list, падение ноды
+  на ветке с дефектом) выполнены автором в контейнере ROS 2 Lyrical; выводы
+  в parameters.md сверены с сохранёнными выводами ros2 CLI и pytest.
+  check_practice.py PR04 выполнен локально.
+
+Переписка и промпты не приложены.
