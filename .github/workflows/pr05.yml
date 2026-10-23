@@ -1,15 +1,15 @@
-name: PR04 — параметры ноды, тесты и проверка отчёта
+name: PR05 — launch, QoS, запись MCAP и проверка отчёта
 
 on: [push, pull_request]
 
 jobs:
   practice:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     container: osrf/ros:lyrical-desktop-full
     env:
-      COURSE_KIT_URL: https://ros.lms.ci.nsu.ru/downloads/robotics-course-kit-v1-w04-fec6b4e886c1.tar.gz
-      COURSE_KIT_SHA256: fec6b4e886c19146078bf69fbf90a19279a4cd33f656642395350b299efeb226
+      COURSE_KIT_URL: https://ros.lms.ci.nsu.ru/downloads/robotics-course-kit-v1-w07-9b7fdd5424d3.tar.gz
+      COURSE_KIT_SHA256: 9b7fdd5424d3d97e47d51dbe23064934585e62135dc2902844dd679529bda929
     defaults:
       run:
         shell: bash
@@ -20,28 +20,29 @@ jobs:
           fetch-depth: 0
       - name: Разрешить git работать с каталогом в контейнере
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
-      - name: Собрать turtle_bringup и patrol
+      - name: Собрать turtle_bringup, patrol и course_bringup
         run: |
           set -o pipefail
           source /opt/ros/lyrical/setup.bash
-          colcon build --symlink-install --packages-select turtle_bringup patrol
-      - name: Проверить установку launch и исполняемого файла ноды
+          colcon build --symlink-install --packages-select turtle_bringup patrol course_bringup
+      - name: Проверить установку launch и исполняемых файлов
         run: |
           source /opt/ros/lyrical/setup.bash
           source install/setup.bash
-          test -f "$(ros2 pkg prefix turtle_bringup)/share/turtle_bringup/launch/sim.launch.py"
-          ros2 pkg executables patrol | grep -x 'patrol patrol'
-      - name: Тесты patrol (чистые функции, параметры ноды, линтеры)
+          test -f "$(ros2 pkg prefix course_bringup)/share/course_bringup/launch/patrol.launch.py"
+          ros2 pkg executables patrol | grep -x 'patrol pose_relay'
+          ros2 pkg executables patrol | grep -x 'patrol pose_listener'
+          ros2 launch course_bringup patrol.launch.py --show-args
+      - name: colcon test (юнит-тесты, launch-тест, линтеры)
         run: |
           source /opt/ros/lyrical/setup.bash
           source install/setup.bash
-          cd src/patrol
-          python3 -m pytest test -q
-      - name: Тесты turtle_bringup
+          colcon test --packages-select turtle_bringup patrol course_bringup
+          colcon test-result --all --verbose
+      - name: Запись из evidence читается
         run: |
           source /opt/ros/lyrical/setup.bash
-          cd src/turtle_bringup
-          python3 -m pytest test -q
+          ros2 bag info evidence/pr05/bag
       - name: Скачать зафиксированный комплект курса
         run: |
           curl -fsSLo course-kit.tar.gz "$COURSE_KIT_URL"
@@ -50,14 +51,14 @@ jobs:
           tar -xzf course-kit.tar.gz -C .course-kit
       - name: Проверить JSON и совпадение версии архива
         run: |
-          python3 -m json.tool evidence/pr04/report.json > /dev/null
+          python3 -m json.tool evidence/pr05/report.json > /dev/null
           python3 - <<'PYTHON'
           import json
           import os
           from pathlib import Path
-          report = json.loads(Path('evidence/pr04/report.json').read_text())
+          report = json.loads(Path('evidence/pr05/report.json').read_text())
           if report['course_kit']['archive_sha256'] != os.environ['COURSE_KIT_SHA256']:
               raise SystemExit('SHA-256 комплекта в отчёте отличается от архива CI')
           PYTHON
       - name: Проверить контракт evidence и коммит реализации
-        run: python3 .course-kit/v1/tools/check_practice.py PR04 --submission .
+        run: python3 .course-kit/v1/tools/check_practice.py PR05 --submission .

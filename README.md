@@ -11,11 +11,12 @@
 - `pr04` — ПР04: параметры `linear_speed`, `turn_rate`, `publish_hz`,
   проверка значений и пересоздание таймера;
 - `pr04-defect` — один коммит поверх реализации ПР04 с временно отключённой
-  проверкой `publish_hz` (воспроизведение отказа, не для сдачи).
+  проверкой `publish_hz` (воспроизведение отказа, не для сдачи);
+- `pr05` — ПР05: launch всей системы в пространстве имён, QoS сенсорного потока,
+  запись MCAP и проверка на воспроизведении.
 
-Отчёты: [evidence/pr01](evidence/pr01), [evidence/pr02](evidence/pr02),
-[evidence/pr03](evidence/pr03), [evidence/pr04](evidence/pr04)
-([команды и вывод](evidence/pr04/parameters.md)).
+Отчёты: [evidence/pr01](evidence/pr01) … [evidence/pr05](evidence/pr05)
+([QoS: до](evidence/pr05/qos-before.txt), [после](evidence/pr05/qos-after.txt)).
 [Декларация помощи ИИ](AI_USAGE.md), CI: [.github/workflows](.github/workflows).
 Инструкции к прошлым ПР — в README соответствующих веток.
 
@@ -34,72 +35,94 @@ docker run -d --name pr01-student-demo \
 docker exec -it pr01-student-demo bash
 ```
 
-## ПР04: параметры ноды `patrol`
+## ПР05: система одной командой
 
-| Параметр | По умолчанию | Допустимо | Что меняет |
-|---|---|---|---|
-| `linear_speed` | 0.5 м/с | [0, 1], конечное | `linear.x` команды |
-| `turn_rate` | 0.3 рад/с | [−1, 1], конечное | `angular.z` команды |
-| `publish_hz` | 10.0 Гц | [1, 30], конечное | период таймера `1/publish_hz` |
+```text
+turtlesim ── /turtle1/pose ──┬──▶ /robot_a/patrol ── /turtle1/cmd_vel ──▶ turtlesim
+(глобальный)  (≈62 Гц)       │                      (remap cmd_vel)
+                             └──▶ /robot_a/pose_relay ── /robot_a/sensor_pose (best_effort)
+                                                            ├──▶ /robot_a/pose_listener (QoS из аргумента)
+                                                            └──▶ rosbag2_recorder → MCAP (record:=true)
+```
 
-- [patrol/control.py](src/patrol/patrol/control.py) — чистые функции
-  `compute_command(pose, linear_speed, turn_rate)`, `check_parameter(name, value)`
-  (причина отказа или `None`) и `timer_period(publish_hz)`.
-- [patrol/patrol.py](src/patrol/patrol/patrol.py) — нода:
-  - `add_on_set_parameters_callback` — **проверка до изменения**: при отказе
-    rclpy не меняет значение, таймер и скорости не трогаются;
-  - `add_post_set_parameters_callback` — **применение** принятых значений;
-    для `publish_hz` старый таймер уничтожается, создаётся новый — одновременно
-    всегда один таймер.
-- Тесты: [test_control.py](src/patrol/test/test_control.py) (чистые функции:
-  10→5 Гц, 0, отрицательное, NaN, границы) и
-  [test_parameters_node.py](src/patrol/test/test_parameters_node.py)
-  (настоящая нода: отказ сохраняет значение, объект таймера и период).
+- [course_bringup/launch/patrol.launch.py](src/course_bringup/launch/patrol.launch.py):
+  - turtlesim подключается из `turtle_bringup/sim.launch.py` и остаётся
+    в глобальном пространстве имён;
+  - `patrol`, `pose_relay`, `pose_listener` — в `GroupAction` с
+    `PushRosNamespace(namespace)`; выход `cmd_vel` у `patrol` переназначен
+    в `/turtle1/cmd_vel`;
+  - `ros2 bag record -s mcap` запускается только при `record:=true`
+    через `IfCondition`.
 
-Параметры типа double: `ros2 param set /patrol publish_hz 5.0`. Целое `5`
-отклоняет сам ROS по типу (`Wrong parameter type`), до проверки ноды.
+| Аргумент | По умолчанию | Значение |
+|---|---|---|
+| `namespace` | `robot_a` | пространство имён нод робота |
+| `record` | `false` | `true` — записать `/<namespace>/sensor_pose` в MCAP |
+| `bag_dir` | `evidence/pr05/bag` | каталог записи (не должен существовать) |
+| `subscriber_reliability` | `best_effort` | `reliable` воспроизводит несовместимость QoS |
 
-## ПР04: сборка и тесты
+- [patrol/pose_relay.py](src/patrol/patrol/pose_relay.py) — пересылает
+  `/turtle1/pose` в относительный `sensor_pose` с QoS `best_effort`, depth 10.
+- [patrol/pose_listener.py](src/patrol/patrol/pose_listener.py) — подписчик
+  `sensor_pose` с надёжностью из параметра `reliability`; раз в 2 с пишет
+  в лог число полученных сообщений, при несовместимом QoS — предупреждение.
+- [patrol/qos.py](src/patrol/patrol/qos.py) — профиль `sensor_qos(reliability)`.
+- [patrol/runner.py](src/patrol/patrol/runner.py) — общий `main` всех нод:
+  `spin_once` с таймаутом 0,1 с, чтобы Ctrl+C срабатывал и у ноды без таймера.
+- [config/qos-overrides.yaml](config/qos-overrides.yaml) — QoS издателя
+  при воспроизведении записи.
+
+### Почему reliable-подписчик не получает данных
+
+Издатель `best_effort` не подтверждает доставку и не повторяет потерянное.
+Подписчик `reliable` требует именно этого, а DDS соединяет пару, только если
+предложенный издателем QoS не слабее запрошенного. Поэтому топик виден
+в графе, но пара не создаётся (`incompatible QoS … RELIABILITY`).
+Обратное сочетание — `reliable` издатель и `best_effort` подписчик — совместимо.
+
+## ПР05: сборка и тесты
 
 ```bash
 source /opt/ros/lyrical/setup.bash
 export ROS_DOMAIN_ID=16
-colcon build --symlink-install --packages-select turtle_bringup patrol
+colcon build --symlink-install --packages-select turtle_bringup patrol course_bringup
 source install/setup.bash
-(cd src/patrol && python3 -m pytest test -q)
+colcon test --packages-select patrol course_bringup
+colcon test-result --all --verbose
 ```
 
-Тесты запускаются из каталога пакета: сгенерированные линтеры (flake8, mypy)
-проверяют текущий каталог и из корня захватывают копии в `build/`.
+[test_patrol_launch.py](src/course_bringup/test/test_patrol_launch.py) —
+launch-тест (домен 87, turtlesim offscreen): ноды в `/robot_t`, turtlesim
+глобальный, команда `patrol` идёт в `/turtle1/cmd_vel`, издатель `sensor_pose`
+— `best_effort`, `best_effort`-подписчик получает поток, а `reliable` — нет;
+после остановки все процессы завершились с кодом 0.
 
-## ПР04: опыт
+## ПР05: опыт
 
 ```bash
-ros2 launch turtle_bringup sim.launch.py                                   # A
-ros2 run patrol patrol --ros-args -r cmd_vel:=/turtle1/cmd_vel             # B
-ros2 param set /patrol publish_hz 5.0                                      # C: принято
-ros2 param set /patrol publish_hz 0.0                                      # C: отклонено
-ros2 param get /patrol publish_hz                                          # C: 5.0
-timeout --signal=INT 12s ros2 topic hz /turtle1/cmd_vel                    # C: ≈5 Гц
+# сбой + запись
+ros2 launch course_bringup patrol.launch.py \
+  namespace:=robot_a subscriber_reliability:=reliable record:=true
+timeout 3s ros2 topic echo /robot_a/sensor_pose --qos-reliability reliable --once
+# исправление
+ros2 launch course_bringup patrol.launch.py subscriber_reliability:=best_effort
+timeout 3s ros2 topic echo /robot_a/sensor_pose --qos-reliability best_effort --once
+# воспроизведение (живая система остановлена)
+ros2 bag play evidence/pr05/bag --qos-profile-overrides-path config/qos-overrides.yaml --loop
+ros2 bag info evidence/pr05/bag
 ```
-
-Отказ без проверки: `git switch pr04-defect`, пересобрать и повторить
-`timeout 10s ros2 param set /patrol publish_hz 0.0` — нода падает с
-`ZeroDivisionError` в `timer_period` (exit 1), поток команды прекращается,
-а `ros2 param set` не получает ответа и завершается по таймауту.
-Те же тесты на этой ветке падают (`test_invalid_publish_hz_rejected_state_kept`
-и тесты `check_parameter` для `publish_hz`).
 
 ## Проверка
 
 ```bash
 curl -fsSLo course-kit.tar.gz \
-  https://ros.lms.ci.nsu.ru/downloads/robotics-course-kit-v1-w04-fec6b4e886c1.tar.gz
-printf '%s  %s\n' fec6b4e886c19146078bf69fbf90a19279a4cd33f656642395350b299efeb226 \
+  https://ros.lms.ci.nsu.ru/downloads/robotics-course-kit-v1-w07-9b7fdd5424d3.tar.gz
+printf '%s  %s\n' 9b7fdd5424d3d97e47d51dbe23064934585e62135dc2902844dd679529bda929 \
   course-kit.tar.gz | sha256sum -c -
 mkdir -p .course-kit && tar -xzf course-kit.tar.gz -C .course-kit
-python3 .course-kit/v1/tools/check_practice.py PR04 --submission .
+python3 .course-kit/v1/tools/check_practice.py PR05 --submission .
 ```
 
-Сдача: коммит A — код, тесты, README, workflow; коммит B — только `evidence/pr04/`
-и `AI_USAGE.md`. `report.commit` = SHA коммита A, сдаётся SHA коммита B.
+Сдача: коммит A — код, тесты, launch, README, workflow; коммит B — только
+`evidence/pr05/` и `AI_USAGE.md`. `report.commit` = SHA коммита A,
+сдаётся SHA коммита B.

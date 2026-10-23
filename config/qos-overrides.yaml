@@ -1,0 +1,6 @@
+# QoS издателя при воспроизведении записи: тот же профиль, что у живого pose_relay.
+# ros2 bag play evidence/pr05/bag --qos-profile-overrides-path config/qos-overrides.yaml
+/robot_a/sensor_pose:
+  reliability: best_effort
+  history: keep_last
+  depth: 10

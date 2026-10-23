@@ -1,17 +1,14 @@
 """Нода patrol: хранит последнюю позу черепахи и по таймеру публикует Twist."""
 
-import signal
 from typing import Optional
 
 from geometry_msgs.msg import Twist
 from patrol.control import (
     check_parameter, compute_command, DEFAULTS, LIMITS, timer_period)
+from patrol.runner import run
 from rcl_interfaces.msg import ParameterDescriptor, SetParametersResult
-import rclpy
-from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 from rclpy.parameter import Parameter
-from rclpy.signals import SignalHandlerOptions
 from turtlesim_msgs.msg import Pose
 
 DESCRIPTIONS = {
@@ -110,20 +107,7 @@ class Patrol(Node):
 
 
 def main(args: Optional[list[str]] = None) -> None:
-    # Ctrl+C обрабатывает Python (KeyboardInterrupt из spin), а не обработчик rclpy:
-    # иначе контекст гасится во время ожидания и spin падает с RCLError.
-    # Обработчик ставится явно: у фонового процесса SIGINT может быть унаследован
-    # как игнорируемый, и тогда Python сам KeyboardInterrupt не включает.
-    signal.signal(signal.SIGINT, signal.default_int_handler)
-    rclpy.init(args=args, signal_handler_options=SignalHandlerOptions.NO)
-    node = Patrol()
-    try:
-        rclpy.spin(node)
-    except (KeyboardInterrupt, ExternalShutdownException):
-        pass
-    finally:
-        node.destroy_node()
-        rclpy.try_shutdown()
+    run(Patrol, args)
 
 
 if __name__ == '__main__':
