@@ -1,0 +1,61 @@
+[INFO] [launch]: All log files can be found below /tmp/h/.ros/log/2026-10-23-06-58-24-830132-pr01-demo-4171
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [launch.user]: namespace=/robot_a subscriber_reliability=reliable record=true bag_dir=evidence/pr05/bag
+[INFO] [turtlesim_node-1]: process started with pid [4190]
+[INFO] [patrol-2]: process started with pid [4191]
+[INFO] [pose_relay-3]: process started with pid [4192]
+[INFO] [pose_listener-4]: process started with pid [4193]
+[INFO] [ros2-5]: process started with pid [4194]
+[turtlesim_node-1] error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+[turtlesim_node-1] Failed to create wl_display (No such file or directory)
+[turtlesim_node-1] qt.qpa.plugin: Could not load the Qt platform plugin "wayland" in "" even though it was found.
+[turtlesim_node-1] [INFO] [1792738705.242301183] [turtlesim]: Starting turtlesim with node name /turtlesim
+[turtlesim_node-1] [INFO] [1792738705.265665367] [turtlesim]: Spawning turtle [turtle1] at x=[5.544445], y=[5.544445], theta=[0.000000]
+[pose_listener-4] [INFO] [1792738705.666262143] [robot_a.pose_listener]: subscribed to /robot_a/sensor_pose (reliable)
+[pose_relay-3] [INFO] [1792738705.669913978] [robot_a.pose_relay]: relaying /turtle1/pose -> /robot_a/sensor_pose (best_effort)
+[patrol-2] [INFO] [1792738705.694822314] [robot_a.patrol]: publishing to /turtle1/cmd_vel at 10.0 Hz, waiting for /turtle1/pose
+[pose_listener-4] [WARN] [1792738705.721548787] [robot_a.pose_listener]: incompatible QoS with a publisher on /robot_a/sensor_pose: RELIABILITY (requested reliable); messages will not be delivered
+[pose_relay-3] [WARN] [1792738705.723779518] [robot_a.pose_relay]: New subscription discovered on topic 'sensor_pose', requesting incompatible QoS. No messages will be sent to it. Last incompatible policy: RELIABILITY
+[patrol-2] [INFO] [1792738705.763249236] [robot_a.patrol]: first pose: x=5.544 y=5.544 theta=0.000
+[ros2-5] stdin is not a terminal device. Keyboard handling disabled.[INFO] [1792738705.813392329] [rosbag2_recorder]: Press SPACE for pausing/resuming
+[ros2-5] [INFO] [1792738705.813406326] [rosbag2_recorder]: Event publisher thread: Started
+[ros2-5] [INFO] [1792738705.833114601] [rosbag2_recorder]: Starting recording to 'evidence/pr05/bag'
+[ros2-5] [WARN] [1792738705.833198374] [rosbag2_recorder]: No input serialization format specified, using default rmw serialization format: 'cdr'.
+[ros2-5] [INFO] [1792738705.846008993] [rosbag2_recorder]: Listening for topics...
+[ros2-5] [INFO] [1792738705.846113134] [rosbag2_recorder]: Recording...
+[ros2-5] [INFO] [1792738705.846130787] [rosbag2_recorder]: Topics discovery started.
+[ros2-5] [INFO] [1792738705.940725454] [rosbag2_recorder]: Subscribed to topic '/robot_a/sensor_pose'
+[ros2-5] [INFO] [1792738705.940803272] [rosbag2_recorder]: All requested topics are subscribed. Stopping discovery...
+[ros2-5] [INFO] [1792738705.940813718] [rosbag2_recorder]: Topics discovery stopped.
+[pose_listener-4] [INFO] [1792738707.644215993] [robot_a.pose_listener]: received 0 messages in 2 s (total 0, reliable)
+[pose_listener-4] [INFO] [1792738709.643743371] [robot_a.pose_listener]: received 0 messages in 2 s (total 0, reliable)
+[pose_listener-4] [INFO] [1792738711.643993611] [robot_a.pose_listener]: received 0 messages in 2 s (total 0, reliable)
+[pose_listener-4] [INFO] [1792738713.644541553] [robot_a.pose_listener]: received 0 messages in 2 s (total 0, reliable)
+[pose_listener-4] [INFO] [1792738715.643567645] [robot_a.pose_listener]: received 0 messages in 2 s (total 0, reliable)
+[pose_listener-4] [INFO] [1792738717.643724799] [robot_a.pose_listener]: received 0 messages in 2 s (total 0, reliable)
+[pose_listener-4] [INFO] [1792738719.643929587] [robot_a.pose_listener]: received 0 messages in 2 s (total 0, reliable)
+[pose_listener-4] [INFO] [1792738721.643581267] [robot_a.pose_listener]: received 0 messages in 2 s (total 0, reliable)
+[pose_listener-4] [INFO] [1792738723.644380525] [robot_a.pose_listener]: received 0 messages in 2 s (total 0, reliable)
+[pose_listener-4] [INFO] [1792738725.643957884] [robot_a.pose_listener]: received 0 messages in 2 s (total 0, reliable)
+[pose_listener-4] [INFO] [1792738727.644018185] [robot_a.pose_listener]: received 0 messages in 2 s (total 0, reliable)
+[pose_listener-4] [INFO] [1792738729.643579199] [robot_a.pose_listener]: received 0 messages in 2 s (total 0, reliable)
+[pose_listener-4] [INFO] [1792738731.643927574] [robot_a.pose_listener]: received 0 messages in 2 s (total 0, reliable)
+[pose_listener-4] [INFO] [1792738733.643540178] [robot_a.pose_listener]: received 0 messages in 2 s (total 0, reliable)
+[pose_listener-4] [INFO] [1792738735.643427094] [robot_a.pose_listener]: received 0 messages in 2 s (total 0, reliable)
+[pose_relay-3] [WARN] [1792738736.558125247] [robot_a.pose_relay]: New subscription discovered on topic 'sensor_pose', requesting incompatible QoS. No messages will be sent to it. Last incompatible policy: RELIABILITY
+[pose_listener-4] [INFO] [1792738737.644164079] [robot_a.pose_listener]: received 0 messages in 2 s (total 0, reliable)
+[pose_listener-4] [INFO] [1792738739.643341131] [robot_a.pose_listener]: received 0 messages in 2 s (total 0, reliable)
+[pose_listener-4] [INFO] [1792738741.643611796] [robot_a.pose_listener]: received 0 messages in 2 s (total 0, reliable)
+[pose_listener-4] [INFO] [1792738743.643786424] [robot_a.pose_listener]: received 0 messages in 2 s (total 0, reliable)
+[pose_listener-4] [INFO] [1792738745.643994770] [robot_a.pose_listener]: received 0 messages in 2 s (total 0, reliable)
+[pose_listener-4] [INFO] [1792738747.643414031] [robot_a.pose_listener]: received 0 messages in 2 s (total 0, reliable)
+[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[ros2-5] [INFO] [1792738748.547876243] [rosbag2_cpp]: Writing remaining messages from cache to the bag. It may take a while
+[turtlesim_node-1] [INFO] [1792738748.547977229] [rclcpp]: signal_handler(signum=2)
+[ros2-5] [INFO] [1792738748.550897467] [rosbag2_recorder]: Recording stopped
+[ros2-5] [INFO] [1792738748.552830612] [rosbag2_recorder]: Event publisher thread: Exited
+[INFO] [turtlesim_node-1]: process has finished cleanly [pid 4190]
+[INFO] [pose_listener-4]: process has finished cleanly [pid 4193]
+[INFO] [pose_relay-3]: process has finished cleanly [pid 4192]
+[INFO] [patrol-2]: process has finished cleanly [pid 4191]
+[INFO] [ros2-5]: process has finished cleanly [pid 4194]

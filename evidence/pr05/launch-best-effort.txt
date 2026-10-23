@@ -1,0 +1,31 @@
+[INFO] [launch]: All log files can be found below /tmp/h/.ros/log/2026-10-23-06-59-28-637255-pr01-demo-4502
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [launch.user]: namespace=/robot_a subscriber_reliability=best_effort record=false bag_dir=evidence/pr05/bag
+[INFO] [turtlesim_node-1]: process started with pid [4521]
+[INFO] [patrol-2]: process started with pid [4522]
+[INFO] [pose_relay-3]: process started with pid [4523]
+[INFO] [pose_listener-4]: process started with pid [4524]
+[turtlesim_node-1] error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+[turtlesim_node-1] Failed to create wl_display (No such file or directory)
+[turtlesim_node-1] qt.qpa.plugin: Could not load the Qt platform plugin "wayland" in "" even though it was found.
+[turtlesim_node-1] [INFO] [1792738768.953926151] [turtlesim]: Starting turtlesim with node name /turtlesim
+[turtlesim_node-1] [INFO] [1792738769.015705775] [turtlesim]: Spawning turtle [turtle1] at x=[5.544445], y=[5.544445], theta=[0.000000]
+[pose_relay-3] [INFO] [1792738769.359434959] [robot_a.pose_relay]: relaying /turtle1/pose -> /robot_a/sensor_pose (best_effort)
+[pose_listener-4] [INFO] [1792738769.397994326] [robot_a.pose_listener]: subscribed to /robot_a/sensor_pose (best_effort)
+[patrol-2] [INFO] [1792738769.478557427] [robot_a.patrol]: publishing to /turtle1/cmd_vel at 10.0 Hz, waiting for /turtle1/pose
+[patrol-2] [INFO] [1792738769.552480026] [robot_a.patrol]: first pose: x=5.544 y=5.544 theta=0.000
+[pose_listener-4] [INFO] [1792738771.378741684] [robot_a.pose_listener]: received 127 messages in 2 s (total 127, best_effort)
+[pose_listener-4] [INFO] [1792738773.378718433] [robot_a.pose_listener]: received 125 messages in 2 s (total 252, best_effort)
+[pose_listener-4] [INFO] [1792738775.378327487] [robot_a.pose_listener]: received 125 messages in 2 s (total 377, best_effort)
+[pose_listener-4] [INFO] [1792738777.379445359] [robot_a.pose_listener]: received 125 messages in 2 s (total 502, best_effort)
+[pose_listener-4] [INFO] [1792738779.379919682] [robot_a.pose_listener]: received 125 messages in 2 s (total 627, best_effort)
+[pose_listener-4] [INFO] [1792738781.378866109] [robot_a.pose_listener]: received 125 messages in 2 s (total 752, best_effort)
+[pose_listener-4] [INFO] [1792738783.379437790] [robot_a.pose_listener]: received 125 messages in 2 s (total 877, best_effort)
+[pose_listener-4] [INFO] [1792738785.378948909] [robot_a.pose_listener]: received 125 messages in 2 s (total 1002, best_effort)
+[pose_listener-4] [INFO] [1792738787.379826040] [robot_a.pose_listener]: received 125 messages in 2 s (total 1127, best_effort)
+[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[turtlesim_node-1] [INFO] [1792738788.829007765] [rclcpp]: signal_handler(signum=2)
+[INFO] [turtlesim_node-1]: process has finished cleanly [pid 4521]
+[INFO] [pose_relay-3]: process has finished cleanly [pid 4523]
+[INFO] [pose_listener-4]: process has finished cleanly [pid 4524]
+[INFO] [patrol-2]: process has finished cleanly [pid 4522]

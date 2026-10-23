@@ -1,0 +1,33 @@
+$ timeout 3s ros2 topic echo /robot_a/sensor_pose --qos-reliability best_effort --once  # живой поток
+x: 4.4294819831848145
+y: 8.453502655029297
+theta: -2.4143853187561035
+linear_velocity: 0.5
+angular_velocity: 0.30000001192092896
+---
+exit=0
+
+$ timeout 3s ros2 topic echo /robot_a/sensor_pose --qos-reliability best_effort --once  # воспроизведение
+x: 5.400633335113525
+y: 5.550314426422119
+theta: -0.08638530224561691
+linear_velocity: 0.5
+angular_velocity: 0.30000001192092896
+---
+exit=0
+
+$ ros2 bag info evidence/pr05/bag
+
+Files:             0_bag_2026_10_23-06_58_25.mcap
+Bag size:          200.2 KiB
+Storage id:        mcap
+ROS Distro:        lyrical
+Duration:          42.603178481s
+Start:             Oct 23 2026 06:58:25.942776001 (1792738705.942776001)
+End:               Oct 23 2026 06:59:08.545954482 (1792738748.545954482)
+Messages:          2818
+Topic information: Topic: /robot_a/sensor_pose | Type: turtlesim_msgs/msg/Pose | Count: 2818 | Serialization Format: cdr
+Services:          0
+Service information: 
+Actions:           0
+Action information: 

@@ -1,0 +1,9 @@
+$ timeout 3s ros2 topic echo /robot_a/sensor_pose --qos-reliability reliable --once  # живой поток
+[WARN] [1792738736.595829329] [_ros2cli_4467]: New publisher discovered on topic '/robot_a/sensor_pose', offering incompatible QoS. No messages will be received from it. Last incompatible policy: RELIABILITY
+!rclpy.ok()
+exit=124
+
+$ timeout 3s ros2 topic echo /robot_a/sensor_pose --qos-reliability reliable --once  # воспроизведение
+[WARN] [1792738820.861218390] [_ros2cli_4831]: New publisher discovered on topic '/robot_a/sensor_pose', offering incompatible QoS. No messages will be received from it. Last incompatible policy: RELIABILITY
+!rclpy.ok()
+exit=124

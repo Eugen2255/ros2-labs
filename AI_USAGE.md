@@ -72,3 +72,27 @@
   check_practice.py PR04 выполнен локально.
 
 Переписка и промпты не приложены.
+
+## PR05
+
+- Использован ИИ: да
+- Модель и версия: Claude Opus 5.5 (Anthropic)
+- Среда или интерфейс агента: Claude Code (CLI) на Windows с доступом к WSL 2
+  и Docker-контейнеру osrf/ros:lyrical-desktop-full
+- Затронутые компоненты: пакет src/course_bringup (launch/patrol.launch.py,
+  launch-тест test/test_patrol_launch.py); в src/patrol — ноды pose_relay.py
+  и pose_listener.py, модуль qos.py и тесты test_qos.py, общий runner.py;
+  config/qos-overrides.yaml; README; workflow .github/workflows/pr05.yml;
+  evidence/pr05 (qos.md, replay_check.py, replay-check.txt, report.json).
+- Характер помощи: разбор задания; код launch-файла, нод и QoS-профиля, тесты
+  и launch-тест; исправление завершения по Ctrl+C у ноды без таймера
+  (spin_once с таймаутом в runner.py); CI; черновик qos.md по фактическим
+  выводам CLI. Скрипт replay_check.py написан и запущен ИИ по записи
+  и выводам автора (replay-check.txt).
+- Как результат был проверен независимо: сборка, colcon test, запуск системы
+  с reliable и best_effort подписчиком, запись MCAP, воспроизведение
+  с overrides и echo-проверки выполнены автором в контейнере ROS 2 Lyrical;
+  выводы в qos.md сверены с сохранёнными выводами ros2 CLI, launch и colcon.
+  check_practice.py PR05 выполнен локально.
+
+Переписка и промпты не приложены.

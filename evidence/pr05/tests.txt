@@ -1,0 +1,10 @@
+Starting >>> patrol
+Finished <<< patrol [20.6s]
+Starting >>> course_bringup
+Finished <<< course_bringup [18.9s]
+
+Summary: 2 packages finished [39.9s]
+build/course_bringup/pytest.xml: 6 tests, 0 errors, 0 failures, 1 skipped
+build/patrol/pytest.xml: 48 tests, 0 errors, 0 failures, 1 skipped
+
+Summary: 54 tests, 0 errors, 0 failures, 2 skipped

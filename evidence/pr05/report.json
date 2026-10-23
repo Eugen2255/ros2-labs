@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "practice_id": "PR05",
+  "commit": "32724ca68d0abd7901433a9972a7a026a20e2375",
+  "course_kit": {
+    "version": "v1-w07",
+    "archive_sha256": "9b7fdd5424d3d97e47d51dbe23064934585e62135dc2902844dd679529bda929"
+  },
+  "commands": [
+    "colcon build --symlink-install --packages-select turtle_bringup patrol course_bringup",
+    "colcon test --packages-select patrol course_bringup",
+    "colcon test-result --all --verbose",
+    "ros2 launch course_bringup patrol.launch.py namespace:=robot_a subscriber_reliability:=reliable record:=true",
+    "ros2 node list --no-daemon --spin-time 2",
+    "ros2 topic list -t --no-daemon --spin-time 2",
+    "ros2 topic info -v /robot_a/sensor_pose --no-daemon --spin-time 2",
+    "timeout 3s ros2 topic echo /robot_a/sensor_pose --qos-reliability reliable --once",
+    "ros2 launch course_bringup patrol.launch.py namespace:=robot_a subscriber_reliability:=best_effort",
+    "timeout 3s ros2 topic echo /robot_a/sensor_pose --qos-reliability best_effort --once",
+    "ros2 bag play evidence/pr05/bag --qos-profile-overrides-path config/qos-overrides.yaml --loop",
+    "ros2 bag info evidence/pr05/bag",
+    "python3 evidence/pr05/replay_check.py",
+    "python3 .course-kit/v1/tools/check_practice.py PR05 --submission ."
+  ],
+  "tests": [
+    {
+      "name": "colcon test: 54 tests, 0 failures, 2 skipped (юнит-тесты, launch-тест, линтеры)",
+      "status": "passed",
+      "evidence": "tests.txt"
+    },
+    {
+      "name": "Ноды робота в /robot_a, turtlesim и запись глобальные; cmd_vel переназначен в /turtle1/cmd_vel",
+      "status": "passed",
+      "evidence": "nodes.txt, topics.txt, launch-reliable.txt"
+    },
+    {
+      "name": "reliable-подписчик на best_effort sensor_pose: incompatible QoS RELIABILITY, 0 сообщений, echo exit=124",
+      "status": "passed",
+      "evidence": "topic-info-reliable.txt, launch-reliable.txt, qos-before.txt"
+    },
+    {
+      "name": "best_effort-подписчик на живом потоке: ≈125 сообщений за 2 с, echo exit=0",
+      "status": "passed",
+      "evidence": "topic-info-best-effort.txt, launch-best-effort.txt, qos-after.txt"
+    },
+    {
+      "name": "Запись MCAP: 42.6 с, 2818 сообщений /robot_a/sensor_pose",
+      "status": "passed",
+      "evidence": "bag-metadata.yaml, qos-after.txt"
+    },
+    {
+      "name": "Воспроизведение (единственный издатель rosbag2_player): reliable exit=124, best_effort exit=0",
+      "status": "passed",
+      "evidence": "nodes-after-stop.txt, topic-info-replay.txt, qos-before.txt, qos-after.txt"
+    },
+    {
+      "name": "Все процессы launch завершились по Ctrl+C с process has finished cleanly",
+      "status": "passed",
+      "evidence": "launch-reliable.txt, launch-best-effort.txt"
+    }
+  ],
+  "defect": {
+    "reproducer": "ros2 launch course_bringup patrol.launch.py namespace:=robot_a subscriber_reliability:=reliable record:=true. pose_relay публикует /robot_a/sensor_pose с BEST_EFFORT, pose_listener подписан с RELIABLE: в логе incompatible QoS RELIABILITY и received 0 messages; timeout 3s ros2 topic echo --qos-reliability reliable --once -> exit=124. То же на воспроизведении записи.",
+    "root_cause": "Подписчик RELIABLE запрашивает подтверждаемую доставку, а издатель BEST_EFFORT её не предлагает. DDS соединяет пару, только если предложенный QoS не слабее запрошенного, поэтому топик виден в графе, но пара издатель-подписчик не создаётся и сообщения не доставляются.",
+    "proof_after": "subscriber_reliability:=best_effort без изменения кода: pose_listener получает ≈125 сообщений за 2 с, echo --qos-reliability best_effort -> поза, exit=0. На воспроизведении evidence/pr05/bag с config/qos-overrides.yaml (единственный издатель rosbag2_player, живых нод нет) best_effort echo -> exit=0, reliable -> exit=124."
+  },
+  "claims": {
+    "public_tests_passed": true,
+    "defect_reproduced": true,
+    "defect_fixed": true,
+    "replay_verified": true
+  },
+  "time": {
+    "contact_academic_hours": 2,
+    "self_study_hours": 2
+  },
+  "ai_used": true,
+  "recorded_at_utc": "2026-10-23T07:03:09Z"
+}

@@ -1,0 +1,8 @@
+/events/rosbag2_messages_lost [rosbag2_interfaces/msg/MessagesLostEvent]
+/events/write_split [rosbag2_interfaces/msg/WriteSplitEvent]
+/parameter_events [rcl_interfaces/msg/ParameterEvent]
+/robot_a/sensor_pose [turtlesim_msgs/msg/Pose]
+/rosout [rcl_interfaces/msg/Log]
+/turtle1/cmd_vel [geometry_msgs/msg/Twist]
+/turtle1/color_sensor [turtlesim_msgs/msg/Color]
+/turtle1/pose [turtlesim_msgs/msg/Pose]
