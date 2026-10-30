@@ -1,0 +1,201 @@
+<?xml version="1.0"?>
+<!--
+  Ackermann-робот курса. Размеры взяты из course kit:
+  .course-kit/v1/models/course_ackermann/model.sdf (только как источник чисел,
+  плагины Gazebo сюда не переносятся).
+  Единицы СИ: метры, килограммы, секунды, радианы.
+  Оси по REP-103: x вперёд, y влево, z вверх.
+  base_link — центр между осями на высоте осей колёс; корень дерева tf.
+-->
+<robot name="course_ackermann" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Шасси -->
+  <xacro:property name="wheelbase" value="0.80"/>        <!-- база: от задней оси до передней, м -->
+  <xacro:property name="track" value="0.62"/>            <!-- колея: между центрами левого и правого колёс, м -->
+  <xacro:property name="wheel_radius" value="0.12"/>     <!-- м -->
+  <xacro:property name="wheel_width" value="0.07"/>      <!-- м -->
+  <xacro:property name="wheel_mass" value="0.8"/>        <!-- кг -->
+  <xacro:property name="knuckle_mass" value="0.2"/>      <!-- кг, поворотный кулак -->
+  <xacro:property name="knuckle_radius" value="0.02"/>   <!-- м, условный размер для инерции -->
+  <xacro:property name="steering_limit" value="0.55"/>   <!-- рад, предел поворота кулака -->
+  <xacro:property name="steering_effort" value="25.0"/>  <!-- Н·м -->
+  <xacro:property name="steering_velocity" value="2.0"/> <!-- рад/с; в SDF не задано, URDF требует -->
+
+  <!-- Корпус -->
+  <xacro:property name="body_length" value="1.05"/>      <!-- м, вдоль x -->
+  <xacro:property name="body_width" value="0.52"/>       <!-- м, вдоль y -->
+  <xacro:property name="body_height" value="0.22"/>      <!-- м, вдоль z -->
+  <xacro:property name="body_z" value="0.12"/>           <!-- м, центр корпуса над base_link -->
+  <xacro:property name="body_mass" value="12.0"/>        <!-- кг -->
+
+  <!-- Сенсоры: в SDF камера, лидар и IMU закреплены в одной точке -->
+  <xacro:property name="sensor_x" value="0.28"/>         <!-- м, вперёд от base_link -->
+  <xacro:property name="sensor_z" value="0.38"/>         <!-- м, вверх от base_link -->
+  <xacro:property name="sensor_mass" value="0.033333333333"/>  <!-- кг -->
+  <xacro:property name="camera_size" value="0.04"/>      <!-- м, ребро корпуса камеры -->
+  <xacro:property name="lidar_radius" value="0.035"/>    <!-- м -->
+  <xacro:property name="lidar_height" value="0.04"/>     <!-- м -->
+  <xacro:property name="imu_size" value="0.02"/>         <!-- м -->
+
+  <material name="body_blue"><color rgba="0.05 0.36 0.72 1"/></material>
+  <material name="tyre_black"><color rgba="0.04 0.04 0.04 1"/></material>
+  <material name="marker_yellow"><color rgba="0.95 0.75 0.10 1"/></material>
+  <material name="camera_grey"><color rgba="0.30 0.30 0.30 1"/></material>
+  <material name="lidar_red"><color rgba="0.80 0.15 0.15 1"/></material>
+  <material name="imu_green"><color rgba="0.15 0.65 0.25 1"/></material>
+
+  <!-- Тензоры инерции однородных тел относительно центра масс -->
+  <xacro:macro name="box_inertial" params="mass x y z *origin">
+    <inertial>
+      <xacro:insert_block name="origin"/>
+      <mass value="${mass}"/>
+      <inertia ixx="${mass * (y * y + z * z) / 12}" ixy="0" ixz="0"
+               iyy="${mass * (x * x + z * z) / 12}" iyz="0"
+               izz="${mass * (x * x + y * y) / 12}"/>
+    </inertial>
+  </xacro:macro>
+
+  <!-- Ось цилиндра — z системы inertial origin -->
+  <xacro:macro name="cylinder_inertial" params="mass radius length *origin">
+    <inertial>
+      <xacro:insert_block name="origin"/>
+      <mass value="${mass}"/>
+      <inertia ixx="${mass * (3 * radius * radius + length * length) / 12}" ixy="0" ixz="0"
+               iyy="${mass * (3 * radius * radius + length * length) / 12}" iyz="0"
+               izz="${mass * radius * radius / 2}"/>
+    </inertial>
+  </xacro:macro>
+
+  <!-- Колесо: ось вращения y; цилиндр URDF направлен по z, поэтому поворот на 90° вокруг x -->
+  <xacro:macro name="wheel" params="name">
+    <link name="${name}">
+      <visual>
+        <origin xyz="0 0 0" rpy="${pi / 2} 0 0"/>
+        <geometry><cylinder radius="${wheel_radius}" length="${wheel_width}"/></geometry>
+        <material name="tyre_black"/>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="${pi / 2} 0 0"/>
+        <geometry><cylinder radius="${wheel_radius}" length="${wheel_width}"/></geometry>
+      </collision>
+      <xacro:cylinder_inertial mass="${wheel_mass}" radius="${wheel_radius}" length="${wheel_width}">
+        <origin xyz="0 0 0" rpy="${pi / 2} 0 0"/>
+      </xacro:cylinder_inertial>
+    </link>
+  </xacro:macro>
+
+  <!-- Переднее колесо: base_link → кулак (руль, revolute z) → колесо (continuous y) -->
+  <xacro:macro name="front_wheel" params="side y_sign">
+    <link name="front_${side}_knuckle">
+      <xacro:box_inertial mass="${knuckle_mass}"
+                          x="${2 * knuckle_radius}" y="${2 * knuckle_radius}" z="${2 * knuckle_radius}">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+      </xacro:box_inertial>
+    </link>
+    <joint name="front_${side}_steering_joint" type="revolute">
+      <parent link="base_link"/>
+      <child link="front_${side}_knuckle"/>
+      <origin xyz="${wheelbase / 2} ${y_sign * track / 2} 0" rpy="0 0 0"/>
+      <axis xyz="0 0 1"/>
+      <limit lower="${-steering_limit}" upper="${steering_limit}"
+             effort="${steering_effort}" velocity="${steering_velocity}"/>
+    </joint>
+    <xacro:wheel name="front_${side}_wheel"/>
+    <joint name="front_${side}_wheel_joint" type="continuous">
+      <parent link="front_${side}_knuckle"/>
+      <child link="front_${side}_wheel"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+    </joint>
+  </xacro:macro>
+
+  <!-- Заднее колесо крепится прямо к base_link -->
+  <xacro:macro name="rear_wheel" params="side y_sign">
+    <xacro:wheel name="rear_${side}_wheel"/>
+    <joint name="rear_${side}_wheel_joint" type="continuous">
+      <parent link="base_link"/>
+      <child link="rear_${side}_wheel"/>
+      <origin xyz="${-wheelbase / 2} ${y_sign * track / 2} 0" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+    </joint>
+  </xacro:macro>
+
+  <!-- Сенсор: фиксированное звено; offset задан относительно parent (по контракту base_link) -->
+  <xacro:macro name="sensor_joint" params="name parent:=base_link">
+    <joint name="${name}_joint" type="fixed">
+      <parent link="${parent}"/>
+      <child link="${name}_link"/>
+      <origin xyz="${sensor_x} 0 ${sensor_z}" rpy="0 0 0"/>
+    </joint>
+  </xacro:macro>
+
+  <link name="base_link">
+    <!-- Отображение: корпус и жёлтая метка спереди — видно, что x смотрит вперёд -->
+    <visual>
+      <origin xyz="0 0 ${body_z}" rpy="0 0 0"/>
+      <geometry><box size="${body_length} ${body_width} ${body_height}"/></geometry>
+      <material name="body_blue"/>
+    </visual>
+    <visual>
+      <origin xyz="${body_length / 2 - 0.03} 0 ${body_z + body_height / 2 + 0.005}" rpy="0 0 0"/>
+      <geometry><box size="0.06 ${body_width / 2} 0.01"/></geometry>
+      <material name="marker_yellow"/>
+    </visual>
+    <!-- Столкновения: только габарит корпуса, без декоративной метки -->
+    <collision>
+      <origin xyz="0 0 ${body_z}" rpy="0 0 0"/>
+      <geometry><box size="${body_length} ${body_width} ${body_height}"/></geometry>
+    </collision>
+    <xacro:box_inertial mass="${body_mass}" x="${body_length}" y="${body_width}" z="${body_height}">
+      <origin xyz="0 0 ${body_z}" rpy="0 0 0"/>
+    </xacro:box_inertial>
+  </link>
+
+  <xacro:front_wheel side="left" y_sign="1"/>
+  <xacro:front_wheel side="right" y_sign="-1"/>
+  <xacro:rear_wheel side="left" y_sign="1"/>
+  <xacro:rear_wheel side="right" y_sign="-1"/>
+
+  <link name="camera_link">
+    <visual>
+      <geometry><box size="${camera_size} ${2 * camera_size} ${camera_size}"/></geometry>
+      <material name="camera_grey"/>
+    </visual>
+    <collision>
+      <geometry><box size="${camera_size} ${2 * camera_size} ${camera_size}"/></geometry>
+    </collision>
+    <xacro:box_inertial mass="${sensor_mass}" x="${camera_size}" y="${2 * camera_size}" z="${camera_size}">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </xacro:box_inertial>
+  </link>
+  <xacro:sensor_joint name="camera"/>
+
+  <link name="lidar_link">
+    <visual>
+      <geometry><cylinder radius="${lidar_radius}" length="${lidar_height}"/></geometry>
+      <material name="lidar_red"/>
+    </visual>
+    <collision>
+      <geometry><cylinder radius="${lidar_radius}" length="${lidar_height}"/></geometry>
+    </collision>
+    <xacro:cylinder_inertial mass="${sensor_mass}" radius="${lidar_radius}" length="${lidar_height}">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </xacro:cylinder_inertial>
+  </link>
+  <xacro:sensor_joint name="lidar"/>
+
+  <link name="imu_link">
+    <visual>
+      <geometry><box size="${imu_size} ${imu_size} ${imu_size}"/></geometry>
+      <material name="imu_green"/>
+    </visual>
+    <collision>
+      <geometry><box size="${imu_size} ${imu_size} ${imu_size}"/></geometry>
+    </collision>
+    <xacro:box_inertial mass="${sensor_mass}" x="${imu_size}" y="${imu_size}" z="${imu_size}">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </xacro:box_inertial>
+  </link>
+  <xacro:sensor_joint name="imu"/>
+
+</robot>

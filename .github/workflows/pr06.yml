@@ -1,0 +1,59 @@
+name: PR06 — URDF/Xacro, tf2 и проверка отчёта
+
+on: [push, pull_request]
+
+jobs:
+  practice:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    container: osrf/ros:lyrical-desktop-full
+    env:
+      COURSE_KIT_URL: https://ros.lms.ci.nsu.ru/downloads/robotics-course-kit-v1-w08-aea8efd0a516.tar.gz
+      COURSE_KIT_SHA256: aea8efd0a51668af63f2e475b82bfa28bd76c21f20d8afea6b136d43a56a88fb
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Получить всю историю коммитов
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Разрешить git работать с каталогом в контейнере
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      # Kit нужен до тестов: test_dimensions_match_course_sdf сверяет модель с model.sdf.
+      - name: Скачать зафиксированный комплект курса
+        run: |
+          curl -fsSLo course-kit.tar.gz "$COURSE_KIT_URL"
+          printf '%s  %s\n' "$COURSE_KIT_SHA256" course-kit.tar.gz | sha256sum -c -
+          mkdir -p .course-kit
+          tar -xzf course-kit.tar.gz -C .course-kit
+      - name: Собрать пакеты
+        run: |
+          set -o pipefail
+          source /opt/ros/lyrical/setup.bash
+          colcon build --symlink-install \
+            --packages-select turtle_bringup patrol course_bringup course_description
+      - name: Развернуть Xacro и проверить URDF
+        run: |
+          source /opt/ros/lyrical/setup.bash
+          xacro src/course_description/urdf/vehicle.urdf.xacro > /tmp/vehicle.urdf
+          check_urdf /tmp/vehicle.urdf
+      - name: colcon test (модель, tf_static, прежние пакеты, линтеры)
+        run: |
+          source /opt/ros/lyrical/setup.bash
+          source install/setup.bash
+          colcon test --packages-select turtle_bringup patrol course_bringup course_description
+          colcon test-result --all --verbose
+      - name: Проверить JSON и совпадение версии архива
+        run: |
+          python3 -m json.tool evidence/pr06/report.json > /dev/null
+          python3 - <<'PYTHON'
+          import json
+          import os
+          from pathlib import Path
+          report = json.loads(Path('evidence/pr06/report.json').read_text())
+          if report['course_kit']['archive_sha256'] != os.environ['COURSE_KIT_SHA256']:
+              raise SystemExit('SHA-256 комплекта в отчёте отличается от архива CI')
+          PYTHON
+      - name: Проверить контракт evidence и коммит реализации
+        run: python3 .course-kit/v1/tools/check_practice.py PR06 --submission .
