@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "practice_id": "PR06",
+  "commit": "05bb96dc3a4944d5e9421ea4a4fce096f1bf963d",
+  "course_kit": {
+    "version": "v1-w08",
+    "archive_sha256": "aea8efd0a51668af63f2e475b82bfa28bd76c21f20d8afea6b136d43a56a88fb"
+  },
+  "commands": [
+    "colcon build --symlink-install --packages-select course_description",
+    "colcon test --packages-select course_description",
+    "colcon test-result --test-result-base build/course_description --verbose",
+    "xacro src/course_description/urdf/vehicle.urdf.xacro > /tmp/vehicle.urdf",
+    "check_urdf /tmp/vehicle.urdf",
+    "ros2 launch course_description display.launch.py",
+    "ros2 topic info /tf_static --verbose",
+    "timeout 4 ros2 topic echo /tf_static --once --qos-durability transient_local --qos-reliability reliable",
+    "timeout 4 ros2 topic echo /tf_static --once --qos-durability volatile --qos-reliability reliable",
+    "ros2 run tf2_ros tf2_echo base_link lidar_link",
+    "ros2 topic echo /tf_static --once",
+    "ros2 run tf2_tools view_frames",
+    "ros2 launch course_description display.launch.py joint_states:=true",
+    "ros2 topic info /tf --verbose",
+    "ros2 run tf2_ros tf2_echo base_link front_left_wheel",
+    "git switch pr06-defect",
+    "python3 .course-kit/v1/tools/check_practice.py PR06 --submission ."
+  ],
+  "tests": [
+    {
+      "name": "colcon test course_description: 23 tests, 0 failures, 1 skipped (структура, геометрия, инерция, check_urdf, сверка с model.sdf, launch-тест /tf_static)",
+      "status": "passed",
+      "evidence": "tests.txt"
+    },
+    {
+      "name": "xacro + check_urdf: root base_link, 7 детей, 10 звеньев, exit=0",
+      "status": "passed",
+      "evidence": "model-check.txt"
+    },
+    {
+      "name": "/tf_static: единственный издатель robot_state_publisher, RELIABLE + TRANSIENT_LOCAL; поздний transient_local exit=0, volatile exit=124",
+      "status": "passed",
+      "evidence": "tf-qos.txt"
+    },
+    {
+      "name": "tf2_echo base_link lidar_link = [0.280, 0.000, 0.380]; base_link front_left_wheel = [0.400, 0.310, 0.000]",
+      "status": "passed",
+      "evidence": "tf2-echo-lidar.txt, tf2-echo-wheel.txt, view-frames.pdf, view-frames-full.pdf"
+    },
+    {
+      "name": "pr06-defect: check_urdf exit=0, но 4 failures; tf2_echo base_link lidar_link = [0.560, 0.000, 0.760]",
+      "status": "passed",
+      "evidence": "defect-diff.txt, model-check-defect.txt, tests-defect.txt, tf2-echo-lidar-defect.txt, tf-static-defect.txt"
+    },
+    {
+      "name": "После возврата parent тот же тест: 23 tests, 0 failures; lidar снова [0.280, 0.000, 0.380]",
+      "status": "passed",
+      "evidence": "tests-after.txt, tf2-echo-lidar-after.txt"
+    }
+  ],
+  "defect": {
+    "reproducer": "Ветка pr06-defect (коммит 38060d5): <xacro:sensor_joint name=\"lidar\" parent=\"camera_link\"/> вместо parent base_link, offset (0.28, 0, 0.38) сохранён. check_urdf принимает дерево (exit=0), но tf2_echo base_link lidar_link даёт [0.560, 0.000, 0.760], в /tf_static у lidar_link frame_id camera_link, colcon test: 4 failures (test_expected_parent_of_every_link, test_sensor_pose_in_base_link[lidar_link], test_dimensions_match_course_sdf, launch-тест /tf_static).",
+    "root_cause": "Положение звена в base_link — произведение преобразований по цепочке родителей. С parent camera_link offset лидара складывается с offset камеры: (0.28, 0, 0.38) + (0.28, 0, 0.38) = (0.56, 0, 0.76). Структурно дерево корректно (один корень, нет циклов), поэтому check_urdf ошибку не видит; неверен смысл связи.",
+    "proof_after": "Возврат на pr06 (parent base_link по умолчанию): тот же colcon test — 23 tests, 0 failures; tf2_echo base_link lidar_link — [0.280, 0.000, 0.380]."
+  },
+  "claims": {
+    "public_tests_passed": true,
+    "defect_reproduced": true,
+    "defect_fixed": true
+  },
+  "time": {
+    "contact_academic_hours": 2,
+    "self_study_hours": 2
+  },
+  "ai_used": true,
+  "recorded_at_utc": "2026-10-30T16:30:14Z"
+}

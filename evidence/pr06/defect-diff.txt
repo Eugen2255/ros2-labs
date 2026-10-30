@@ -1,0 +1,13 @@
+diff --git a/src/course_description/urdf/vehicle.urdf.xacro b/src/course_description/urdf/vehicle.urdf.xacro
+index 9b5a563..2ea7af3 100644
+--- a/src/course_description/urdf/vehicle.urdf.xacro
++++ b/src/course_description/urdf/vehicle.urdf.xacro
+@@ -182,7 +182,7 @@
+       <origin xyz="0 0 0" rpy="0 0 0"/>
+     </xacro:cylinder_inertial>
+   </link>
+-  <xacro:sensor_joint name="lidar"/>
++  <xacro:sensor_joint name="lidar" parent="camera_link"/>
+ 
+   <link name="imu_link">
+     <visual>

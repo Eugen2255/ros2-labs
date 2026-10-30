@@ -1,0 +1,43 @@
+[INFO] [launch]: All log files can be found below /tmp/h/.ros/log/2026-10-30-16-19-17-827259-e84b5e22997f-1838
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [robot_state_publisher-1]: process started with pid [1858]
+[INFO] [rviz2-2]: process started with pid [1859]
+[robot_state_publisher-1] [WARN] [1793377158.070080905] [kdl_parser]: The root link base_link has an inertia specified in the URDF, but KDL does not support a root link with an inertia.  As a workaround, you can add an extra dummy link to your URDF.
+[robot_state_publisher-1] [INFO] [1793377158.070222305] [robot_state_publisher]: Robot initialized
+[rviz2-2] error: XDG_RUNTIME_DIR is invalid or not set in the environment.
+[rviz2-2] Failed to create wl_display (No such file or directory)
+[rviz2-2] qt.qpa.plugin: Could not load the Qt platform plugin "wayland" in "" even though it was found.
+[rviz2-2] [ERROR] [1793377158.398116293] [rviz2]: Could not open file: /tmp/h/.rviz2/persistent_settings
+[rviz2-2] [INFO] [1793377159.821228040] [rviz2]: Stereo is NOT SUPPORTED
+[rviz2-2] [INFO] [1793377159.821305340] [rviz2]: OpenGl version: 4.5 (GLSL 4.5)
+[rviz2-2] [INFO] [1793377159.910852236] [rviz2]: Stereo is NOT SUPPORTED
+[rviz2-2] [ERROR] [1793377160.021060632] [rviz2]: Could not load pixmap package://rviz_common/icons/rotate.svg
+[rviz2-2] [ERROR] [1793377160.021129932] [rviz2]: Could not load pixmap package://rviz_common/icons/rotate.svg -- using default cursor instead.
+[rviz2-2] [ERROR] [1793377160.021538632] [rviz2]: Could not load pixmap package://rviz_common/icons/rotate_cam.svg
+[rviz2-2] [ERROR] [1793377160.021567232] [rviz2]: Could not load pixmap package://rviz_common/icons/rotate_cam.svg -- using default cursor instead.
+[rviz2-2] [ERROR] [1793377160.022190532] [rviz2]: Could not load pixmap package://rviz_common/icons/move2d.svg
+[rviz2-2] [ERROR] [1793377160.022237632] [rviz2]: Could not load pixmap package://rviz_common/icons/move2d.svg -- using default cursor instead.
+[rviz2-2] [ERROR] [1793377160.022970032] [rviz2]: Could not load pixmap package://rviz_common/icons/move_z.svg
+[rviz2-2] [ERROR] [1793377160.023009932] [rviz2]: Could not load pixmap package://rviz_common/icons/move_z.svg -- using default cursor instead.
+[rviz2-2] [ERROR] [1793377160.023433532] [rviz2]: Could not load pixmap package://rviz_common/icons/zoom.svg
+[rviz2-2] [ERROR] [1793377160.023475832] [rviz2]: Could not load pixmap package://rviz_common/icons/zoom.svg -- using default cursor instead.
+[rviz2-2] [ERROR] [1793377160.024034232] [rviz2]: Could not load pixmap package://rviz_common/icons/crosshair.svg
+[rviz2-2] [ERROR] [1793377160.024073932] [rviz2]: Could not load pixmap package://rviz_common/icons/crosshair.svg -- using default cursor instead.
+[rviz2-2] [ERROR] [1793377160.029227932] [rviz2]: Could not load pixmap package://rviz_default_plugins/icons/classes/FocusCamera.svg
+[rviz2-2] [ERROR] [1793377160.030478232] [rviz2]: Could not load pixmap package://rviz_default_plugins/icons/classes/Measure.svg
+[rviz2-2] [ERROR] [1793377160.031736232] [rviz2]: Could not load pixmap package://rviz_default_plugins/icons/classes/PublishPoint.svg
+[rviz2-2] [ERROR] [1793377160.033797132] [rviz2]: Could not load pixmap package://rviz_common/icons/cursor.svg
+[rviz2-2] [ERROR] [1793377160.044075931] [rviz2]: Could not load pixmap package://rviz_common/icons/crosshair.svg -- using default cursor instead.
+[rviz2-2] [ERROR] [1793377160.044323031] [rviz2]: Could not load pixmap package://rviz_common/icons/crosshair.svg -- using default cursor instead.
+[rviz2-2] [ERROR] [1793377160.044498831] [rviz2]: Could not load pixmap package://rviz_common/icons/rotate.svg -- using default cursor instead.
+[rviz2-2] [ERROR] [1793377160.044539831] [rviz2]: Could not load pixmap package://rviz_common/icons/rotate_cam.svg -- using default cursor instead.
+[rviz2-2] [ERROR] [1793377160.044551731] [rviz2]: Could not load pixmap package://rviz_common/icons/move2d.svg -- using default cursor instead.
+[rviz2-2] [ERROR] [1793377160.044562531] [rviz2]: Could not load pixmap package://rviz_common/icons/move_z.svg -- using default cursor instead.
+[rviz2-2] [ERROR] [1793377160.044569931] [rviz2]: Could not load pixmap package://rviz_common/icons/zoom.svg -- using default cursor instead.
+[rviz2-2] [ERROR] [1793377160.044577531] [rviz2]: Could not load pixmap package://rviz_common/icons/crosshair.svg -- using default cursor instead.
+[rviz2-2] [ERROR] [1793377160.051029431] [rviz2]: Could not load pixmap package://rviz_common/icons/classes/Displays.svg
+[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[robot_state_publisher-1] [INFO] [1793377249.719760509] [rclcpp]: signal_handler(signum=2)
+[rviz2-2] [INFO] [1793377249.719786406] [rclcpp]: signal_handler(signum=2)
+[INFO] [rviz2-2]: process has finished cleanly [pid 1859]
+[INFO] [robot_state_publisher-1]: process has finished cleanly [pid 1858]

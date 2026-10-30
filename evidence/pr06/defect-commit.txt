@@ -1,0 +1,1 @@
+38060d5 PR06 defect: attach lidar_link to camera_link instead of base_link

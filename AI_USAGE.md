@@ -96,3 +96,28 @@
   check_practice.py PR05 выполнен локально.
 
 Переписка и промпты не приложены.
+
+## PR06
+
+- Использован ИИ: да
+- Модель и версия: Claude Opus 5.5 (Anthropic)
+- Среда или интерфейс агента: Claude Code (CLI) на Windows с доступом к WSL 2
+  и Docker-контейнеру osrf/ros:lyrical-desktop-full
+- Затронутые компоненты: пакет src/course_description — urdf/vehicle.urdf.xacro,
+  launch/display.launch.py, rviz/vehicle.rviz, нода zero_joint_states.py,
+  тесты test_vehicle_model.py и test_tf_static_launch.py; ветка pr06-defect;
+  README; workflow .github/workflows/pr06.yml; evidence/pr06 (frames.md,
+  вывод в конце tf-qos.txt, report.json).
+- Характер помощи: разбор задания и SDF-модели из course kit; Xacro-модель
+  с параметрами и макросами инерции, launch и конфигурация RViz, тесты
+  структуры, геометрии и QoS /tf_static; коммит с дефектом; CI; черновики
+  frames.md и вывода в tf-qos.txt по фактическим выводам CLI. ИИ также
+  пересоздал контейнер ROS из того же образа после его пропажи в Docker.
+- Как результат был проверен независимо: сборка, colcon test на pr06,
+  pr06-defect и после возврата, xacro + check_urdf, запуск
+  robot_state_publisher с RViz, команды tf-qos.txt, tf2_echo, view_frames
+  и проверка /tf_static на ветке с дефектом выполнены автором в контейнере
+  ROS 2 Lyrical; модель наблюдалась в RViz через WSLg; выводы в frames.md
+  сверены с сохранёнными выводами. check_practice.py PR06 выполнен локально.
+
+Переписка и промпты не приложены.

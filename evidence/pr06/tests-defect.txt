@@ -1,0 +1,44 @@
+Starting >>> course_description
+Finished <<< course_description [23.0s]	[ with test failures ]
+
+Summary: 1 package finished [23.3s]
+  1 package had test failures: course_description
+build/course_description/pytest.xml: 23 tests, 0 errors, 4 failures, 1 skipped
+- course_description.test.test_tf_static_launch test_tf_static_launch
+  <<< failure message
+    test_tf_static_launch.TestTfStatic.test_late_transient_local_subscriber_gets_sensor_frames failed
+    test_tf_static_launch.TestTfStatic.test_tf2_lookup_base_link_to_lidar failed
+  >>>
+- course_description.test.test_vehicle_model test_expected_parent_of_every_link
+  <<< failure message
+    AssertionError: assert {'camera_link...se_link', ...} == {'camera_link...se_link', ...}
+      
+      Omitting 8 identical items, use -vv to show
+      Differing items:
+      {'lidar_link': 'camera_link'} != {'lidar_link': 'base_link'}
+      Use -v to get more diff
+  >>>
+- course_description.test.test_vehicle_model test_sensor_pose_in_base_link[lidar_link]
+  <<< failure message
+    AssertionError: 
+    Not equal to tolerance rtol=1e-07, atol=1e-09
+    
+    Mismatched elements: 2 / 3 (66.7%)
+    Max absolute difference among violations: 0.38
+    Max relative difference among violations: 1.
+     ACTUAL: array([0.56, 0.  , 0.76])
+     DESIRED: array([0.28, 0.  , 0.38])
+  >>>
+- course_description.test.test_vehicle_model test_dimensions_match_course_sdf
+  <<< failure message
+    AssertionError: 
+    Not equal to tolerance rtol=1e-07, atol=1e-09
+    
+    Mismatched elements: 2 / 3 (66.7%)
+    Max absolute difference among violations: 0.38
+    Max relative difference among violations: 1.
+     ACTUAL: array([0.56, 0.  , 0.76])
+     DESIRED: array([0.28, 0.  , 0.38])
+  >>>
+
+Summary: 23 tests, 0 errors, 4 failures, 1 skipped
